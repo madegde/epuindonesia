@@ -6,7 +6,7 @@ const majorEvents = [
   },
   {
     "date": "2001-05-01",
-    "text": "Wahid Scandal<br>(Buloggate & Bruneigate)",
+    "text": "Buloggate & Bruneigate Scandal",
     "value": 254.69
   },
   {
