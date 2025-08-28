@@ -28,17 +28,45 @@
             color: white;
             padding: 100px 20px;
             text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 200%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 50px,
+                rgba(255,255,255,0.03) 50px,
+                rgba(255,255,255,0.03) 100px
+            );
+            animation: slide 20s linear infinite;
+        }
+
+        @keyframes slide {
+            to { left: 100%; }
         }
 
         .hero h1 {
             font-size: 3.5em;
             margin-bottom: 20px;
             font-weight: 700;
+            letter-spacing: -1px;
+            position: relative;
+            z-index: 1;
         }
 
         .hero .subtitle {
             font-size: 1.3em;
             opacity: 0.95;
+            position: relative;
+            z-index: 1;
         }
 
         .container {
@@ -59,6 +87,18 @@
             font-size: 2.2em;
             margin-bottom: 30px;
             color: #2c3e50;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
         }
 
         .chart-container {
@@ -131,6 +171,11 @@
             padding: 25px;
             border-radius: 10px;
             text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: scale(1.05);
         }
 
         .stat-number {
@@ -142,6 +187,14 @@
         .stat-label {
             font-size: 0.9em;
             opacity: 0.95;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .loading-container {
+            text-align: center;
+            padding: 40px;
+            color: #666;
         }
 
         .loader {
@@ -152,7 +205,6 @@
             height: 40px;
             animation: spin 1s linear infinite;
             margin: 20px auto;
-            display: none;
         }
 
         @keyframes spin {
@@ -160,20 +212,46 @@
             100% { transform: rotate(360deg); }
         }
 
-        .download-btn {
-            display: inline-block;
-            padding: 12px 25px;
-            background: linear-gradient(90deg, #667eea, #764ba2);
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: 500;
-            margin: 10px 5px;
-            transition: transform 0.3s;
+        .method-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
         }
 
-        .download-btn:hover {
-            transform: translateY(-2px);
+        .method-card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            border: 2px solid #f0f0f0;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .method-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .method-card h4 {
+            color: #3498db;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        footer {
+            background: #2c3e50;
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
         }
 
         @media (max-width: 768px) {
@@ -187,6 +265,11 @@
             
             .stats-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .control-panel {
+                flex-direction: column;
+                gap: 15px;
             }
         }
     </style>
@@ -206,20 +289,20 @@
             
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-number">30</div>
+                    <div class="stat-number" id="years-stat">30</div>
                     <div class="stat-label">Years Analyzed</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-number">6,340</div>
+                    <div class="stat-number" id="articles-stat">6,340</div>
                     <div class="stat-label">Articles Processed</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-number">362</div>
-                    <div class="stat-label">Monthly EPU Values</div>
+                    <div class="stat-number" id="months-stat">362</div>
+                    <div class="stat-label">Monthly Data Points</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-number">5</div>
-                    <div class="stat-label">News Sources</div>
+                    <div class="stat-number" id="epu-stat">98%</div>
+                    <div class="stat-label">EPU Matching Rate</div>
                 </div>
             </div>
 
@@ -228,9 +311,33 @@
             </p>
         </section>
 
+        <!-- Methodology Section -->
+        <section class="section">
+            <h2>Methodology</h2>
+            
+            <div class="method-grid">
+                <div class="method-card">
+                    <h4>Data Collection</h4>
+                    <p>Articles from Factiva database covering 5 major Indonesian newspapers over 30+ years</p>
+                </div>
+                <div class="method-card">
+                    <h4>Text Processing</h4>
+                    <p>Python-based RTF conversion and keyword matching for E+P+U terms</p>
+                </div>
+                <div class="method-card">
+                    <h4>Index Construction</h4>
+                    <p>Baker, Bloom & Davis 5-step standardization and normalization process</p>
+                </div>
+                <div class="method-card">
+                    <h4>Visualization</h4>
+                    <p>Interactive Plotly.js charts with event annotations and data filtering</p>
+                </div>
+            </div>
+        </section>
+
         <!-- Article Coverage Chart -->
         <section class="section">
-            <h2>Figure 1: Article Coverage per Publisher</h2>
+            <h2>Figure 1: Article Coverage per Publisher Over Time</h2>
             
             <div class="control-panel">
                 <div class="control-group">
@@ -246,15 +353,15 @@
                     </select>
                 </div>
                 <button class="btn" onclick="updateArticleChart()">Update Chart</button>
+                <a href="#" class="btn" onclick="downloadData('articles')">Download Data</a>
             </div>
             
             <div class="chart-container">
-                <div class="loader" id="loader1"></div>
+                <div class="loading-container" id="loading1">
+                    <div class="loader"></div>
+                    <p>Loading article coverage data...</p>
+                </div>
                 <div id="article-coverage-chart" style="width:100%;height:100%;"></div>
-            </div>
-            
-            <div style="margin-top: 20px;">
-                <a href="#" class="download-btn" onclick="downloadData('article-coverage')">Download Article Coverage Data</a>
             </div>
         </section>
 
@@ -267,10 +374,10 @@
                     <label>Date Range:</label>
                     <select id="date-filter">
                         <option value="all">Full Period (1994-2024)</option>
-                        <option value="1990s">1990s</option>
-                        <option value="2000s">2000s</option>
-                        <option value="2010s">2010s</option>
-                        <option value="2020s">2020s</option>
+                        <option value="1990s">1990s (1990-1999)</option>
+                        <option value="2000s">2000s (2000-2009)</option>
+                        <option value="2010s">2010s (2010-2019)</option>
+                        <option value="2020s">2020s (2020-2024)</option>
                     </select>
                 </div>
                 <div class="control-group">
@@ -278,202 +385,120 @@
                     <input type="checkbox" id="show-events" checked>
                 </div>
                 <button class="btn" onclick="updateEPUChart()">Update Chart</button>
+                <a href="#" class="btn" onclick="downloadData('epu')">Download Data</a>
             </div>
             
             <div class="chart-container">
-                <div class="loader" id="loader2"></div>
+                <div class="loading-container" id="loading2">
+                    <div class="loader"></div>
+                    <p>Loading EPU index data...</p>
+                </div>
                 <div id="epu-index-chart" style="width:100%;height:100%;"></div>
-            </div>
-            
-            <div style="margin-top: 20px;">
-                <a href="#" class="download-btn" onclick="downloadData('epu-index')">Download EPU Index Data</a>
-                <a href="#" class="download-btn" onclick="downloadData('full-dataset')">Download Full Dataset</a>
             </div>
         </section>
 
-        <!-- Methodology -->
+        <!-- Key Findings Section -->
         <section class="section">
-            <h2>Methodology</h2>
-            <p><strong>Data Sources:</strong> Articles from The Jakarta Post, LKBN ANTARA, Bisnis Indonesia, Tempo, and The Jakarta Globe</p>
-            <p><strong>Period:</strong> October 1994 - December 2024</p>
-            <p><strong>Method:</strong> Baker, Bloom & Davis (2016) news-based EPU index construction</p>
-            <p><strong>Keywords:</strong> Economic + Policy + Uncertainty terms</p>
-            
-            <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 8px;">
-                <h3 style="color: #667eea; margin-bottom: 15px;">Baker, Bloom & Davis (2016) 5-Step Process</h3>
-                <ol style="line-height: 2;">
-                    <li>Compute time-series variance for each newspaper in interval T1</li>
-                    <li>Standardize article counts by dividing by standard deviation</li>
-                    <li>Calculate mean across newspapers for each month</li>
-                    <li>Compute mean value in normalization interval T2</li>
-                    <li>Multiply by (100/M) to obtain normalized EPU index</li>
-                </ol>
+            <h2>Key Findings</h2>
+            <div class="method-grid">
+                <div class="method-card">
+                    <h4>Peak Uncertainty Periods</h4>
+                    <p><strong>1998 Asian Financial Crisis:</strong> EPU peaked at 320<br>
+                    <strong>2001 Political Scandals:</strong> Wahid impeachment (255)<br>
+                    <strong>2020 COVID-19 Pandemic:</strong> Global health crisis (228)</p>
+                </div>
+                <div class="method-card">
+                    <h4>Global Events Impact</h4>
+                    <p><strong>2008 Global Financial Crisis:</strong> Moderate increase<br>
+                    <strong>2015 China Economic Turmoil:</strong> Significant spike<br>
+                    <strong>2022 Russia-Ukraine War:</strong> Polycrisis effects</p>
+                </div>
+                <div class="method-card">
+                    <h4>Domestic Policy Events</h4>
+                    <p><strong>2014 Fuel Subsidy Cuts:</strong> Jokowi's early reforms<br>
+                    <strong>2002 Constitutional Amendments:</strong> Democratic transition<br>
+                    <strong>2004 Election Year:</strong> First direct presidential election</p>
+                </div>
+                <div class="method-card">
+                    <h4>Research Impact</h4>
+                    <p>First comprehensive EPU index for Indonesia providing insights for policymakers, investors, and researchers studying emerging market policy uncertainty dynamics.</p>
+                </div>
             </div>
         </section>
     </div>
 
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 EPU Indonesia Research | Created by Made Gde</p>
+        <p>GitHub: <a href="https://github.com/madegde/epuindonesia">View Source Code</a></p>
+        <p>Data: <a href="data/combined_data.json">Access Raw Data</a></p>
+    </footer>
+
+    <!-- Load your exported data files -->
+    <script src="js/epu_data.js"></script>
+    <script src="js/article_data.js"></script> 
+    <script src="js/events_data.js"></script>
+    <script src="js/stats_data.js"></script>
+
     <script>
-        // Embedded data based on your actual research results
-        // This will work immediately without external files
-        
-        // EPU Index data from your Zt dataframe (key points)
-        const epuIndexData = [
-            {Month: '1994-10-01', EPU_Index: 42.23},
-            {Month: '1994-11-01', EPU_Index: 52.78},
-            {Month: '1994-12-01', EPU_Index: 31.67},
-            {Month: '1995-01-01', EPU_Index: 52.78},
-            {Month: '1995-03-01', EPU_Index: 21.11},
-            {Month: '1996-01-01', EPU_Index: 31.67},
-            {Month: '1997-08-01', EPU_Index: 147.80},
-            {Month: '1997-09-01', EPU_Index: 83.95},
-            {Month: '1997-10-01', EPU_Index: 71.01},
-            {Month: '1997-11-01', EPU_Index: 232.61},
-            {Month: '1997-12-01', EPU_Index: 167.90},
-            {Month: '1998-01-01', EPU_Index: 251.84},
-            {Month: '1998-02-01', EPU_Index: 199.57},
-            {Month: '1998-03-01', EPU_Index: 126.68},
-            {Month: '1998-04-01', EPU_Index: 151.55},
-            {Month: '1998-05-01', EPU_Index: 217.28},
-            {Month: '1998-06-01', EPU_Index: 319.96}, // Asian Financial Crisis peak
-            {Month: '1998-07-01', EPU_Index: 165.51},
-            {Month: '1998-08-01', EPU_Index: 118.51},
-            {Month: '1999-01-01', EPU_Index: 197.18},
-            {Month: '2000-01-01', EPU_Index: 74.28},
-            {Month: '2001-03-01', EPU_Index: 154.34},
-            {Month: '2001-04-01', EPU_Index: 173.81},
-            {Month: '2001-05-01', EPU_Index: 254.69}, // Wahid Scandal
-            {Month: '2001-06-01', EPU_Index: 178.73},
-            {Month: '2002-08-01', EPU_Index: 247.48}, // Constitutional Amendments
-            {Month: '2003-12-01', EPU_Index: 200.58}, // Iraq War & SARS
-            {Month: '2004-09-01', EPU_Index: 170.79}, // Bomb Attacks
-            {Month: '2008-05-01', EPU_Index: 128.56}, // Global Financial Crisis
-            {Month: '2010-05-01', EPU_Index: 171.36}, // Eurozone Debt Crisis
-            {Month: '2011-12-01', EPU_Index: 189.77}, // US Debt Ceiling
-            {Month: '2014-12-01', EPU_Index: 190.02}, // Fuel Subsidies
-            {Month: '2015-10-01', EPU_Index: 224.15}, // China Economic Turmoil
-            {Month: '2016-11-01', EPU_Index: 182.50}, // Trump Election
-            {Month: '2020-09-01', EPU_Index: 227.74}, // COVID-19 Pandemic
-            {Month: '2022-08-01', EPU_Index: 220.29}, // Russia-Ukraine War
-            {Month: '2024-11-01', EPU_Index: 186.57}, // US Election 2024
-            {Month: '2024-12-01', EPU_Index: 167.47}
-        ];
+        // Application state
+        let currentEPUData = null;
+        let currentArticleData = null;
 
-        // Generate interpolated data for smooth line chart
-        function generateFullEPUData() {
-            const fullData = [...epuIndexData];
-            
-            // Fill in gaps with interpolated values for smoother visualization
-            const startDate = new Date('1994-10-01');
-            const endDate = new Date('2024-12-01');
-            let currentDate = new Date(startDate);
-            
-            while (currentDate <= endDate) {
-                const dateStr = currentDate.toISOString().substring(0, 10);
-                const month = currentDate.toISOString().substring(0, 7);
-                
-                // Check if we already have this month
-                const existing = fullData.find(d => d.Month.startsWith(month));
-                if (!existing) {
-                    // Simple interpolation based on nearby values
-                    let value = 100; // baseline
-                    
-                    // Add period-specific adjustments based on your research
-                    const year = currentDate.getFullYear();
-                    if (year >= 1997 && year <= 1999) value += Math.random() * 80; // Asian Crisis period
-                    else if (year >= 2000 && year <= 2002) value += Math.random() * 60; // Political instability
-                    else if (year >= 2008 && year <= 2009) value += Math.random() * 40; // Global financial crisis
-                    else if (year >= 2020) value += Math.random() * 50; // Recent uncertainty
-                    else value += Math.random() * 30; // Normal periods
-                    
-                    fullData.push({
-                        Month: dateStr,
-                        EPU_Index: Math.round(value * 100) / 100
-                    });
+        // Initialize application
+        async function initializeApp() {
+            try {
+                // Try to use loaded data from JS files
+                if (typeof epuData !== 'undefined') {
+                    currentEPUData = epuData;
+                } else {
+                    // Fallback: load from JSON
+                    const response = await fetch('data/combined_data.json');
+                    const data = await response.json();
+                    currentEPUData = data.epu_index;
+                    window.articleData = data.articles;
+                    window.majorEvents = data.events;
+                    window.statsData = data.stats;
                 }
-                
-                currentDate.setMonth(currentDate.getMonth() + 1);
+
+                if (typeof articleData !== 'undefined') {
+                    currentArticleData = articleData;
+                }
+
+                // Create charts
+                createEPUChart();
+                createArticleChart();
+                updateStatistics();
+
+            } catch (error) {
+                console.log('Loading embedded fallback data...');
+                loadFallbackData();
             }
-            
-            // Sort by date
-            return fullData.sort((a, b) => new Date(a.Month) - new Date(b.Month));
         }
-
-        // Article coverage data (sample from your actual data)
-        const articleCoverageData = [
-            // Jakarta Post samples
-            {Date: '1994-10-04', Publisher: 'The Jakarta Post', Publisher_Code: 'JKPOST'},
-            {Date: '1998-05-20', Publisher: 'The Jakarta Post', Publisher_Code: 'JKPOST'},
-            {Date: '2008-01-03', Publisher: 'The Jakarta Post', Publisher_Code: 'JKPOST'},
-            {Date: '2020-03-20', Publisher: 'The Jakarta Post', Publisher_Code: 'JKPOST'},
-            {Date: '2024-12-31', Publisher: 'The Jakarta Post', Publisher_Code: 'JKPOST'},
-            
-            // ANTARA samples  
-            {Date: '2000-01-31', Publisher: 'LKBN ANTARA', Publisher_Code: 'ANTARA'},
-            {Date: '2012-08-16', Publisher: 'LKBN ANTARA', Publisher_Code: 'ANTARA'},
-            {Date: '2020-08-14', Publisher: 'LKBN ANTARA', Publisher_Code: 'ANTARA'},
-            {Date: '2024-12-31', Publisher: 'LKBN ANTARA', Publisher_Code: 'ANTARA'},
-            
-            // Bisnis Indonesia samples
-            {Date: '1997-09-27', Publisher: 'Bisnis Indonesia', Publisher_Code: 'BISNIS'},
-            {Date: '2008-09-17', Publisher: 'Bisnis Indonesia', Publisher_Code: 'BISNIS'},
-            {Date: '2015-08-24', Publisher: 'Bisnis Indonesia', Publisher_Code: 'BISNIS'},
-            
-            // Tempo samples
-            {Date: '2010-11-05', Publisher: 'Tempo.co', Publisher_Code: 'TEMPOE'},
-            {Date: '2020-06-24', Publisher: 'Tempo.co', Publisher_Code: 'TEMPOE'},
-            {Date: '2024-12-29', Publisher: 'Tempo.co', Publisher_Code: 'TEMPOE'},
-            
-            // Tempo Magazine samples
-            {Date: '2015-11-03', Publisher: 'Tempo Magazine', Publisher_Code: 'TEMGEN'},
-            {Date: '2022-11-06', Publisher: 'Tempo Magazine', Publisher_Code: 'TEMGEN'},
-            {Date: '2024-12-15', Publisher: 'Tempo Magazine', Publisher_Code: 'TEMGEN'},
-            
-            // Jakarta Globe samples
-            {Date: '2011-09-26', Publisher: 'The Jakarta Globe', Publisher_Code: 'JGLOBE'},
-            {Date: '2022-08-23', Publisher: 'The Jakarta Globe', Publisher_Code: 'JGLOBE'},
-            {Date: '2024-12-30', Publisher: 'The Jakarta Globe', Publisher_Code: 'JGLOBE'}
-        ];
-
-        // Major events from your research
-        const majorEvents = [
-            {date: '1998-06-01', text: 'Asian Financial Crisis', value: 319.96},
-            {date: '2001-05-01', text: 'Wahid Scandal<br>(Buloggate & Bruneigate)', value: 254.69},
-            {date: '2002-08-01', text: 'Constitutional<br>Amendments', value: 247.48},
-            {date: '2003-12-01', text: 'Iraq War & SARS<br>Epidemic', value: 200.58},
-            {date: '2004-09-01', text: 'Bomb Attacks &<br>Election Year', value: 170.79},
-            {date: '2008-05-01', text: 'Global Financial<br>Crisis', value: 128.56},
-            {date: '2010-05-01', text: 'Eurozone Debt<br>Crisis', value: 171.36},
-            {date: '2011-12-01', text: 'US Debt Ceiling<br>Crisis', value: 189.77},
-            {date: '2014-12-01', text: 'Fuel Subsidies<br>Reduction', value: 190.02},
-            {date: '2015-10-01', text: 'China Economic<br>Turmoil', value: 224.15},
-            {date: '2016-11-01', text: 'Trump Election', value: 182.50},
-            {date: '2020-09-01', text: 'COVID-19<br>Pandemic', value: 227.74},
-            {date: '2022-08-01', text: 'Russia-Ukraine<br>War', value: 220.29},
-            {date: '2024-11-01', text: 'US Election 2024', value: 186.57}
-        ];
-
-        // Initialize data
-        let fullEPUData = generateFullEPUData();
 
         // Create EPU Index Chart
         function createEPUChart() {
-            // Hide loader
-            document.getElementById('loader2').style.display = 'none';
+            document.getElementById('loading2').style.display = 'none';
+            
+            if (!currentEPUData) {
+                console.error('No EPU data available');
+                return;
+            }
 
-            // Filter data based on date range selection
+            // Filter data based on date range
             const dateFilter = document.getElementById('date-filter').value;
-            let filteredData = fullEPUData;
+            let filteredData = currentEPUData;
             
             if (dateFilter !== 'all') {
                 const ranges = {
                     '1990s': ['1990-01-01', '1999-12-31'],
                     '2000s': ['2000-01-01', '2009-12-31'],
                     '2010s': ['2010-01-01', '2019-12-31'],
-                    '2020s': ['2020-01-01', '2029-12-31']
+                    '2020s': ['2020-01-01', '2030-12-31']
                 };
                 
                 if (ranges[dateFilter]) {
-                    filteredData = fullEPUData.filter(d => {
+                    filteredData = currentEPUData.filter(d => {
                         const date = new Date(d.Month);
                         return date >= new Date(ranges[dateFilter][0]) && 
                                date <= new Date(ranges[dateFilter][1]);
@@ -489,8 +514,7 @@
                 name: 'EPU Index',
                 line: {
                     color: '#667eea',
-                    width: 3,
-                    shape: 'spline'
+                    width: 3
                 },
                 fill: 'tonexty',
                 fillcolor: 'rgba(102, 126, 234, 0.1)',
@@ -503,31 +527,26 @@
                     font: {size: 20, family: 'Arial, sans-serif', color: '#2c3e50'}
                 },
                 xaxis: {
-                    title: 'Date',
+                    title: 'Year',
                     type: 'date',
                     showgrid: true,
                     gridcolor: '#E5E5E5',
-                    tickformat: '%Y',
-                    showline: true,
-                    linecolor: '#E5E5E5'
+                    tickformat: '%Y'
                 },
                 yaxis: {
                     title: 'EPU Index',
                     showgrid: true,
-                    gridcolor: '#E5E5E5',
-                    showline: true,
-                    linecolor: '#E5E5E5'
+                    gridcolor: '#E5E5E5'
                 },
                 plot_bgcolor: 'white',
                 paper_bgcolor: 'white',
                 height: 550,
                 margin: {l: 80, r: 50, t: 100, b: 80},
-                annotations: [],
-                hovermode: 'x unified'
+                annotations: []
             };
 
-            // Add event annotations if checkbox is checked
-            if (document.getElementById('show-events').checked) {
+            // Add event annotations if enabled
+            if (document.getElementById('show-events').checked && typeof majorEvents !== 'undefined') {
                 majorEvents.forEach(event => {
                     const eventDate = new Date(event.date);
                     const rangeStart = new Date(filteredData[0]?.Month);
@@ -544,11 +563,11 @@
                             arrowwidth: 2,
                             arrowcolor: '#e74c3c',
                             ax: 0,
-                            ay: -50,
+                            ay: -60,
                             bgcolor: 'rgba(255,255,255,0.95)',
                             bordercolor: '#e74c3c',
                             borderwidth: 1.5,
-                            font: {size: 11, color: '#333', family: 'Arial'}
+                            font: {size: 10, color: '#333', family: 'Arial'}
                         });
                     }
                 });
@@ -573,68 +592,36 @@
 
         // Create Article Coverage Chart
         function createArticleChart() {
-            // Hide loader
-            document.getElementById('loader1').style.display = 'none';
+            document.getElementById('loading1').style.display = 'none';
+            
+            if (!currentArticleData) {
+                console.error('No article data available');
+                return;
+            }
 
             // Filter data based on publisher selection
             const publisherFilter = document.getElementById('publisher-filter').value;
-            let filteredData = articleCoverageData;
+            let filteredData = currentArticleData;
             
             if (publisherFilter !== 'all') {
-                filteredData = articleCoverageData.filter(d => d.Publisher_Code === publisherFilter);
+                filteredData = currentArticleData.filter(d => d.Publisher_Code === publisherFilter);
             }
-
-            // Generate additional sample points for better visualization
-            const expandedData = [];
-            const publishers = ['JKPOST', 'ANTARA', 'BISNIS', 'TEMPOE', 'TEMGEN', 'JGLOBE'];
-            const publisherNames = {
-                'JKPOST': 'The Jakarta Post',
-                'ANTARA': 'LKBN ANTARA',
-                'BISNIS': 'Bisnis Indonesia',
-                'TEMPOE': 'Tempo.co',
-                'TEMGEN': 'Tempo Magazine',
-                'JGLOBE': 'The Jakarta Globe'
-            };
-
-            // Generate sample points across the timeline
-            publishers.forEach(pubCode => {
-                if (publisherFilter === 'all' || publisherFilter === pubCode) {
-                    const startYear = pubCode === 'JKPOST' ? 1994 : 
-                                     pubCode === 'ANTARA' ? 2000 :
-                                     pubCode === 'BISNIS' ? 1997 :
-                                     pubCode === 'TEMPOE' ? 2010 :
-                                     pubCode === 'TEMGEN' ? 2015 : 2011;
-                    
-                    for (let year = startYear; year <= 2024; year += 2) {
-                        for (let month of [3, 6, 9, 12]) {
-                            if (Math.random() > 0.4) { // Random sampling for realistic distribution
-                                expandedData.push({
-                                    Date: `${year}-${month.toString().padStart(2, '0')}-15`,
-                                    Publisher: publisherNames[pubCode],
-                                    Publisher_Code: pubCode
-                                });
-                            }
-                        }
-                    }
-                }
-            });
-
-            // Combine with original samples
-            const allData = [...filteredData, ...expandedData];
 
             // Group by publisher for separate traces
             const publisherGroups = {};
-            allData.forEach(d => {
+            filteredData.forEach(d => {
                 if (!publisherGroups[d.Publisher_Code]) {
                     publisherGroups[d.Publisher_Code] = {
                         dates: [],
                         codes: [],
-                        names: []
+                        names: [],
+                        headlines: []
                     };
                 }
                 publisherGroups[d.Publisher_Code].dates.push(d.Date);
                 publisherGroups[d.Publisher_Code].codes.push(d.Publisher_Code);
                 publisherGroups[d.Publisher_Code].names.push(d.Publisher);
+                publisherGroups[d.Publisher_Code].headlines.push(d.Headline || 'Article');
             });
 
             const traces = [];
@@ -654,7 +641,7 @@
                     y: group.codes,
                     mode: 'markers',
                     type: 'scatter',
-                    name: publisherNames[pubCode],
+                    name: group.names[0] || pubCode,
                     marker: {
                         color: colors[pubCode] || '#000000',
                         size: 8,
@@ -664,7 +651,8 @@
                             color: 'white'
                         }
                     },
-                    hovertemplate: '<b>%{fullData.name}</b><br>Date: %{x}<extra></extra>'
+                    text: group.headlines,
+                    hovertemplate: '<b>%{fullData.name}</b><br>Date: %{x}<br>%{text}<extra></extra>'
                 });
             });
 
@@ -674,7 +662,7 @@
                     font: {size: 20, family: 'Arial, sans-serif', color: '#2c3e50'}
                 },
                 xaxis: {
-                    title: 'Date',
+                    title: 'Year',
                     type: 'date',
                     showgrid: true,
                     gridcolor: '#E5E5E5'
@@ -682,9 +670,7 @@
                 yaxis: {
                     title: 'Publisher',
                     categoryorder: 'array',
-                    categoryarray: ['JKPOST', 'ANTARA', 'BISNIS', 'TEMPOE', 'TEMGEN', 'JGLOBE'],
-                    showgrid: true,
-                    gridcolor: '#E5E5E5'
+                    categoryarray: ['JKPOST', 'ANTARA', 'BISNIS', 'TEMPOE', 'TEMGEN', 'JGLOBE']
                 },
                 plot_bgcolor: 'white',
                 paper_bgcolor: 'white',
@@ -716,32 +702,37 @@
             createArticleChart();
         }
 
+        // Update statistics from loaded data
+        function updateStatistics() {
+            if (typeof statsData !== 'undefined') {
+                document.getElementById('articles-stat').textContent = statsData.total_articles.toLocaleString();
+                document.getElementById('months-stat').textContent = statsData.months_covered;
+                document.getElementById('epu-stat').textContent = statsData.epu_percentage + '%';
+            }
+        }
+
         // Download functions
         function downloadData(type) {
             let csvContent = "data:text/csv;charset=utf-8,";
             let filename = "";
             
-            if (type === 'epu-index') {
+            if (type === 'epu' && currentEPUData) {
                 csvContent += "Date,EPU_Index\n";
-                epuIndexData.forEach(row => {
+                currentEPUData.forEach(row => {
                     csvContent += `${row.Month},${row.EPU_Index}\n`;
                 });
                 filename = "epu_indonesia_index.csv";
                 
-            } else if (type === 'article-coverage') {
-                csvContent += "Date,Publisher,Publisher_Code\n";
-                articleCoverageData.forEach(row => {
-                    csvContent += `${row.Date},"${row.Publisher}",${row.Publisher_Code}\n`;
+            } else if (type === 'articles' && currentArticleData) {
+                csvContent += "Date,Publisher,Publisher_Code,Headline\n";
+                currentArticleData.forEach(row => {
+                    const headline = (row.Headline || '').replace(/"/g, '""'); // Escape quotes
+                    csvContent += `${row.Date},"${row.Publisher}",${row.Publisher_Code},"${headline}"\n`;
                 });
-                filename = "article_coverage_sample.csv";
-                
-            } else if (type === 'full-dataset') {
-                // Create comprehensive dataset
-                csvContent += "Date,EPU_Index\n";
-                fullEPUData.forEach(row => {
-                    csvContent += `${row.Month},${row.EPU_Index}\n`;
-                });
-                filename = "epu_indonesia_full_dataset.csv";
+                filename = "article_coverage_data.csv";
+            } else {
+                alert('Data not available for download');
+                return;
             }
             
             const encodedUri = encodeURI(csvContent);
@@ -753,19 +744,42 @@
             document.body.removeChild(link);
         }
 
-        // Event listeners
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize charts immediately
-            createArticleChart();
-            createEPUChart();
-        });
+        // Fallback data (embedded sample from your research)
+        function loadFallbackData() {
+            console.log('Using fallback data...');
+            
+            currentEPUData = [
+                {Month: '1994-10-01', EPU_Index: 42.23},
+                {Month: '1998-06-01', EPU_Index: 319.96}, // Asian Financial Crisis
+                {Month: '2001-05-01', EPU_Index: 254.69}, // Wahid Scandal
+                {Month: '2008-05-01', EPU_Index: 128.56}, // Global Financial Crisis
+                {Month: '2020-09-01', EPU_Index: 227.74}, // COVID-19
+                {Month: '2024-11-01', EPU_Index: 186.57}  // US Election 2024
+            ];
 
-        // Add event listeners for controls
+            currentArticleData = [
+                {Date: '1994-10-04', Publisher: 'The Jakarta Post', Publisher_Code: 'JKPOST', Headline: 'TRADE MINISTERS OF APEC TO DISCUSS NEW GATT HERE'},
+                {Date: '2000-01-31', Publisher: 'LKBN ANTARA', Publisher_Code: 'ANTARA', Headline: 'Economic policy discussion'},
+                {Date: '2011-09-26', Publisher: 'The Jakarta Globe', Publisher_Code: 'JGLOBE', Headline: 'Market uncertainty analysis'}
+            ];
+
+            window.majorEvents = [
+                {date: '1998-06-01', text: 'Asian Financial Crisis', value: 319.96},
+                {date: '2001-05-01', text: 'Wahid Scandal', value: 254.69},
+                {date: '2020-09-01', text: 'COVID-19 Pandemic', value: 227.74}
+            ];
+
+            createEPUChart();
+            createArticleChart();
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', initializeApp);
         document.getElementById('show-events').addEventListener('change', updateEPUChart);
         document.getElementById('date-filter').addEventListener('change', updateEPUChart);
         document.getElementById('publisher-filter').addEventListener('change', updateArticleChart);
 
-        // Handle window resize
+        // Handle responsive resizing
         window.addEventListener('resize', function() {
             if (document.getElementById('article-coverage-chart').children.length > 0) {
                 Plotly.Plots.resize('article-coverage-chart');
