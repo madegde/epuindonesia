@@ -202,143 +202,343 @@
         </section>
     </div>
 
-    <script>
-        // Your actual data will be loaded here
-        // This example shows how to structure it
+<script>
+        // Load your actual data
+        let epuData = null;
+        let articleData = null;
+        let statsData = null;
 
-        // Load and process your actual EPU data
-        const epuData = [
-            // This will be populated from your CSV data
-            // Format: {x: '1994-10-01', y: 42.23}
-        ];
-
-        const articleData = [
-            // This will be populated from your article coverage data  
-            // Format: {x: '1994-10-04', y: 'JKPOST', publisher: 'The Jakarta Post'}
-        ];
-
-        // Function to create Article Coverage Chart (Figure 1)
-        function createArticleCoverageChart() {
-            // Hide loader
-            document.getElementById('loader1').style.display = 'none';
-            
-            // Create the scatter plot using your actual data structure
-            const trace = {
-                x: [], // Dates from your data
-                y: [], // Publisher codes 
-                mode: 'markers',
-                type: 'scatter',
-                marker: {
-                    size: 8,
-                    opacity: 0.7,
-                    color: [] // Colors based on publisher
-                },
-                text: [], // Publisher names for hover
-                hovertemplate: '<b>%{text}</b><br>Date: %{x}<extra></extra>'
-            };
-
-            const layout = {
-                title: {
-                    text: 'Article Coverage per Publisher Over Time',
-                    font: {size: 20}
-                },
-                xaxis: {
-                    title: 'Date',
-                    type: 'date'
-                },
-                yaxis: {
-                    title: 'Publisher Code',
-                    categoryorder: 'array',
-                    categoryarray: ['JKPOST', 'ANTARA', 'BISNIS', 'TEMPOE', 'TEMGEN', 'JGLOBE']
-                },
-                height: 500,
-                margin: {l: 80, r: 80, t: 80, b: 80}
-            };
-
-            Plotly.newPlot('article-coverage-chart', [trace], layout, {responsive: true});
+        // Initialize the application
+        async function initializeApp() {
+            try {
+                await loadRealData();
+                createArticleChart();
+                createEPUChart();
+                updateStatistics();
+            } catch (error) {
+                console.error('Error loading data:', error);
+                await loadFallbackData();
+            }
         }
 
-        // Function to create EPU Index Chart (Figure 2)  
-        function createEPUIndexChart() {
-            // Hide loader
-            document.getElementById('loader2').style.display = 'none';
+        // Load data from your exported JavaScript files
+        async function loadRealData() {
+            try {
+                // Option 1: Load from separate JS files
+                await loadScript('js/epu_data.js');
+                await loadScript('js/article_data.js');
+                await loadScript('js/stats_data.js');
+                await loadScript('js/events_data.js');
+                
+            } catch (error) {
+                // Option 2: Load from combined JSON file
+                const response = await fetch('data/combined_data.json');
+                const data = await response.json();
+                
+                window.epuData = data.epu_index;
+                window.articleData = data.articles;
+                window.statsData = data.stats;
+                window.majorEvents = data.events;
+            }
+        }
+
+        // Helper function to load JavaScript files
+        function loadScript(src) {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = src;
+                script.onload = resolve;
+                script.onerror = reject;
+                document.head.appendChild(script);
+            });
+        }
+
+        // Create EPU Index Chart with your real data
+        function createEPUChart() {
+            document.getElementById('loading2').style.display = 'none';
             
+            if (!window.epuData) {
+                console.error('EPU data not loaded');
+                return;
+            }
+
+            // Filter data based on date range
+            const dateFilter = document.getElementById('date-filter').value;
+            let filteredData = window.epuData;
+            
+            if (dateFilter !== 'all') {
+                const ranges = {
+                    '1990s': ['1990-01-01', '1999-12-31'],
+                    '2000s': ['2000-01-01', '2009-12-31'],
+                    '2010s': ['2010-01-01', '2019-12-31'],
+                    '2020s': ['2020-01-01', '2029-12-31']
+                };
+                
+                if (ranges[dateFilter]) {
+                    filteredData = window.epuData.filter(d => {
+                        const date = new Date(d.Month);
+                        return date >= new Date(ranges[dateFilter][0]) && 
+                               date <= new Date(ranges[dateFilter][1]);
+                    });
+                }
+            }
+
             const trace = {
-                x: [], // Dates from Zt dataframe
-                y: [], // EPU_Index values from Zt dataframe
+                x: filteredData.map(d => d.Month),
+                y: filteredData.map(d => d.EPU_Index),
                 type: 'scatter',
                 mode: 'lines',
+                name: 'EPU Index',
                 line: {
                     color: '#667eea',
-                    width: 2.5
+                    width: 3,
+                    shape: 'spline'
                 },
-                hovertemplate: 'Date: %{x}<br>EPU Index: %{y:.1f}<extra></extra>'
+                fill: 'tonexty',
+                fillcolor: 'rgba(102, 126, 234, 0.1)',
+                hovertemplate: '<b>EPU Index</b><br>Date: %{x}<br>Value: %{y:.1f}<extra></extra>'
             };
 
             const layout = {
                 title: {
-                    text: 'Economic Policy Uncertainty (EPU) Index',
-                    font: {size: 20}
+                    text: 'Economic Policy Uncertainty Index for Indonesia',
+                    font: {size: 20, family: 'Arial, sans-serif', color: '#2c3e50'}
                 },
                 xaxis: {
                     title: 'Date',
                     type: 'date',
-                    tickformat: '%b\n%Y'
+                    showgrid: true,
+                    gridcolor: '#E5E5E5',
+                    tickformat: '%Y',
+                    showline: true,
+                    linecolor: '#E5E5E5'
                 },
                 yaxis: {
-                    title: 'EPU Index'
+                    title: 'EPU Index',
+                    showgrid: true,
+                    gridcolor: '#E5E5E5',
+                    showline: true,
+                    linecolor: '#E5E5E5'
                 },
-                height: 500,
-                margin: {l: 80, r: 80, t: 80, b: 80},
-                annotations: [
-                    {
-                        x: '1998-06-01',
-                        y: 319.96, // Actual value from your data
-                        text: 'Asian Financial Crisis',
-                        showarrow: true,
-                        arrowhead: 2,
-                        ax: -30,
-                        ay: -20
-                    },
-                    {
-                        x: '2001-05-01', 
-                        y: 254.69,
-                        text: 'Wahid Scandal',
-                        showarrow: true,
-                        arrowhead: 2,
-                        ax: 0,
-                        ay: -70
-                    },
-                    {
-                        x: '2020-09-01',
-                        y: 227.74,
-                        text: 'COVID-19 Pandemic', 
-                        showarrow: true,
-                        arrowhead: 2,
-                        ax: -10,
-                        ay: -30
-                    }
-                    // Add more annotations from your data
-                ]
+                plot_bgcolor: 'white',
+                paper_bgcolor: 'white',
+                height: 550,
+                margin: {l: 80, r: 50, t: 100, b: 80},
+                annotations: [],
+                hovermode: 'x unified'
             };
 
-            Plotly.newPlot('epu-index-chart', [trace], layout, {responsive: true});
+            // Add event annotations if enabled
+            if (document.getElementById('show-events').checked && window.majorEvents) {
+                window.majorEvents.forEach(event => {
+                    const eventDate = new Date(event.date);
+                    const rangeStart = new Date(filteredData[0]?.Month);
+                    const rangeEnd = new Date(filteredData[filteredData.length - 1]?.Month);
+                    
+                    if (eventDate >= rangeStart && eventDate <= rangeEnd) {
+                        layout.annotations.push({
+                            x: event.date,
+                            y: event.value,
+                            text: event.text,
+                            showarrow: true,
+                            arrowhead: 2,
+                            arrowsize: 1.2,
+                            arrowwidth: 2,
+                            arrowcolor: '#e74c3c',
+                            ax: 0,
+                            ay: -50,
+                            bgcolor: 'rgba(255,255,255,0.95)',
+                            bordercolor: '#e74c3c',
+                            borderwidth: 1.5,
+                            font: {size: 11, color: '#333', family: 'Arial'},
+                            captureevents: true
+                        });
+                    }
+                });
+            }
+
+            const config = {
+                responsive: true,
+                displayModeBar: true,
+                modeBarButtonsToRemove: ['pan2d', 'lasso2d', 'select2d', 'autoScale2d'],
+                displaylogo: false,
+                toImageButtonOptions: {
+                    format: 'png',
+                    filename: 'epu_indonesia_index',
+                    height: 600,
+                    width: 1200,
+                    scale: 2
+                }
+            };
+
+            Plotly.newPlot('epu-chart', [trace], layout, config);
         }
 
-        // Function to download data
-        function downloadData(type) {
+        // Create Article Coverage Chart with your real data
+        function createArticleChart() {
+            document.getElementById('loading1').style.display = 'none';
+            
+            if (!window.articleData) {
+                console.error('Article data not loaded');
+                return;
+            }
+
+            // Filter data based on publisher selection
+            const publisherFilter = document.getElementById('publisher-filter').value;
+            let filteredData = window.articleData;
+            
+            if (publisherFilter !== 'all') {
+                filteredData = window.articleData.filter(d => d.Publisher_Code === publisherFilter);
+            }
+
+            // Group data by publisher for separate traces
+            const publisherGroups = {};
+            filteredData.forEach(d => {
+                if (!publisherGroups[d.Publisher_Code]) {
+                    publisherGroups[d.Publisher_Code] = {
+                        dates: [],
+                        publishers: [],
+                        names: [],
+                        headlines: []
+                    };
+                }
+                publisherGroups[d.Publisher_Code].dates.push(d.Date);
+                publisherGroups[d.Publisher_Code].publishers.push(d.Publisher_Code);
+                publisherGroups[d.Publisher_Code].names.push(d.Publisher);
+                publisherGroups[d.Publisher_Code].headlines.push(d.Headline);
+            });
+
+            const traces = [];
+            const colors = {
+                'JKPOST': '#1f77b4',
+                'ANTARA': '#ff7f0e', 
+                'BISNIS': '#2ca02c',
+                'TEMPOE': '#d62728',
+                'TEMGEN': '#9467bd',
+                'JGLOBE': '#8c564b'
+            };
+
+            Object.keys(publisherGroups).forEach(pubCode => {
+                const group = publisherGroups[pubCode];
+                traces.push({
+                    x: group.dates,
+                    y: group.publishers,
+                    mode: 'markers',
+                    type: 'scatter',
+                    name: group.names[0], // Publisher full name
+                    marker: {
+                        color: colors[pubCode] || '#000000',
+                        size: 8,
+                        opacity: 0.7,
+                        line: {
+                            width: 1,
+                            color: 'white'
+                        }
+                    },
+                    text: group.headlines,
+                    hovertemplate: '<b>%{fullData.name}</b><br>Date: %{x}<br>%{text}<extra></extra>'
+                });
+            });
+
+            const layout = {
+                title: {
+                    text: 'Article Coverage per Publisher Over Time',
+                    font: {size: 20, family: 'Arial, sans-serif', color: '#2c3e50'}
+                },
+                xaxis: {
+                    title: 'Date',
+                    type: 'date',
+                    showgrid: true,
+                    gridcolor: '#E5E5E5',
+                    showline: true,
+                    linecolor: '#E5E5E5'
+                },
+                yaxis: {
+                    title: 'Publisher',
+                    categoryorder: 'array',
+                    categoryarray: ['JKPOST', 'ANTARA', 'BISNIS', 'TEMPOE', 'TEMGEN', 'JGLOBE'],
+                    showgrid: true,
+                    gridcolor: '#E5E5E5'
+                },
+                plot_bgcolor: 'white',
+                paper_bgcolor: 'white',
+                height: 550,
+                margin: {l: 120, r: 50, t: 100, b: 80},
+                legend: {
+                    orientation: 'v',
+                    x: 1.02,
+                    y: 1,
+                    bgcolor: 'rgba(255,255,255,0.9)',
+                    bordercolor: '#E5E5E5',
+                    borderwidth: 1
+                },
+                hovermode: 'closest'
+            };
+
+            const config = {
+                responsive: true,
+                displayModeBar: true,
+                modeBarButtonsToRemove: ['pan2d', 'lasso2d', 'select2d', 'autoScale2d'],
+                displaylogo: false,
+                toImageButtonOptions: {
+                    format: 'png',
+                    filename: 'article_coverage_indonesia',
+                    height: 600,
+                    width: 1200,
+                    scale: 2
+                }
+            };
+
+            Plotly.newPlot('article-chart', traces, layout, config);
+        }
+
+        // Update functions
+        function updateEPUChart() {
+            createEPUChart();
+        }
+
+        function updateArticleChart() {
+            createArticleChart();
+        }
+
+        // Update statistics display
+        function updateStatistics() {
+            if (window.statsData) {
+                document.getElementById('epu-count').textContent = 
+                    `${window.statsData.epu_articles} articles (${window.statsData.epu_percentage}%)`;
+                
+                // Update stat cards with real data
+                const statCards = document.querySelectorAll('.stat-number');
+                if (statCards.length >= 4) {
+                    statCards[1].textContent = window.statsData.total_articles.toLocaleString();
+                    statCards[2].textContent = window.statsData.months_covered;
+                    statCards[3].textContent = window.statsData.epu_percentage + '%';
+                }
+            }
+        }
+
+        // Download functions
+        function downloadCSV(type) {
             let csvContent = "data:text/csv;charset=utf-8,";
             let filename = "";
             
-            if (type === 'epu-index') {
-                // Add EPU index data
+            if (type === 'epu' && window.epuData) {
                 csvContent += "Date,EPU_Index\n";
-                // Add your actual EPU data here
+                window.epuData.forEach(row => {
+                    csvContent += `${row.Month},${row.EPU_Index}\n`;
+                });
                 filename = "epu_indonesia_index.csv";
-            } else if (type === 'article-coverage') {
-                csvContent += "Date,Publisher,Publisher_Code\n"; 
-                // Add your article coverage data here
-                filename = "article_coverage_data.csv";
+                
+            } else if (type === 'articles' && window.articleData) {
+                csvContent += "Date,Publisher,Publisher_Code,Headline\n";
+                window.articleData.slice(0, 100).forEach(row => { // Limit to first 100 for performance
+                    csvContent += `${row.Date},"${row.Publisher}",${row.Publisher_Code},"${row.Headline}"\n`;
+                });
+                filename = "article_coverage_sample.csv";
+                
+            } else {
+                alert('Data not available for download');
+                return;
             }
             
             const encodedUri = encodeURI(csvContent);
@@ -350,151 +550,65 @@
             document.body.removeChild(link);
         }
 
-        // Load data when page loads
-        window.addEventListener('load', function() {
-            // Option A: Load from CSV files you upload to GitHub
-            loadDataFromCSV();
+        // Fallback data if files can't be loaded
+        async function loadFallbackData() {
+            console.log('Loading fallback data...');
             
-            // Option B: Embed data directly (see next section)
-            // createChartsWithEmbeddedData();
-        });
-
-        // Function to load data from CSV files
-        async function loadDataFromCSV() {
-            try {
-                // Load your EPU index data
-                const epuResponse = await fetch('data/epu_index_data.csv');
-                const epuText = await epuResponse.text();
-                
-                // Load your article coverage data  
-                const articleResponse = await fetch('data/article_coverage_data.csv');
-                const articleText = await articleResponse.text();
-                
-                // Parse CSV data (simple parser)
-                const epuData = parseCSV(epuText);
-                const articleData = parseCSV(articleText);
-                
-                // Create charts with real data
-                createChartsWithRealData(epuData, articleData);
-                
-            } catch (error) {
-                console.error('Error loading data:', error);
-                // Fallback to embedded data or show error message
-                createChartsWithEmbeddedData();
-            }
-        }
-
-        // Simple CSV parser
-        function parseCSV(text) {
-            const lines = text.trim().split('\n');
-            const headers = lines[0].split(',');
-            const data = [];
-            
-            for (let i = 1; i < lines.length; i++) {
-                const values = lines[i].split(',');
-                const row = {};
-                headers.forEach((header, index) => {
-                    row[header.trim()] = values[index]?.trim();
-                });
-                data.push(row);
-            }
-            return data;
-        }
-
-        // Function to create charts with your real data
-        function createChartsWithRealData(epuData, articleData) {
-            // Process EPU data for chart
-            const epuTrace = {
-                x: epuData.map(d => d.Month),
-                y: epuData.map(d => parseFloat(d.EPU_Index)),
-                type: 'scatter',
-                mode: 'lines',
-                name: 'EPU Index',
-                line: {color: '#667eea', width: 3}
-            };
-
-            // Process article data for chart  
-            const publisherColors = {
-                'JKPOST': '#1f77b4',
-                'ANTARA': '#ff7f0e', 
-                'BISNIS': '#2ca02c',
-                'TEMPOE': '#d62728',
-                'TEMGEN': '#9467bd',
-                'JGLOBE': '#8c564b'
-            };
-
-            const articleTraces = [];
-            const publishers = [...new Set(articleData.map(d => d.Publisher_Code))];
-            
-            publishers.forEach(pub => {
-                const pubData = articleData.filter(d => d.Publisher_Code === pub);
-                articleTraces.push({
-                    x: pubData.map(d => d.Date),
-                    y: pubData.map(d => d.Publisher_Code),
-                    mode: 'markers',
-                    type: 'scatter',
-                    name: pub,
-                    marker: {
-                        color: publisherColors[pub] || '#000',
-                        size: 6,
-                        opacity: 0.7
-                    }
-                });
-            });
-
-            // Create EPU chart
-            const epuLayout = {
-                title: 'Economic Policy Uncertainty Index for Indonesia',
-                xaxis: {title: 'Date', type: 'date'},
-                yaxis: {title: 'EPU Index'},
-                height: 500,
-                // Add your annotations here
-                annotations: [
-                    {
-                        x: '1998-06-01',
-                        y: 319.96,
-                        text: 'Asian Financial Crisis',
-                        showarrow: true,
-                        arrowhead: 2,
-                        ax: -50,
-                        ay: -30
-                    }
-                    // Add more annotations from your notebook
-                ]
-            };
-
-            Plotly.newPlot('epu-index-chart', [epuTrace], epuLayout, {responsive: true});
-            
-            // Create article coverage chart
-            const articleLayout = {
-                title: 'Article Coverage per Publisher Over Time',
-                xaxis: {title: 'Date', type: 'date'},
-                yaxis: {title: 'Publisher Code'},
-                height: 500
-            };
-
-            Plotly.newPlot('article-coverage-chart', articleTraces, articleLayout, {responsive: true});
-            
-            // Hide loaders
-            document.getElementById('loader1').style.display = 'none';
-            document.getElementById('loader2').style.display = 'none';
-        }
-
-        // Fallback function with embedded sample data
-        function createChartsWithEmbeddedData() {
-            // You can embed a subset of your data directly here
-            const sampleEPUData = [
-                {x: '1994-10-01', y: 42.23},
-                {x: '1998-06-01', y: 319.96}, // Asian Financial Crisis peak
-                {x: '2001-05-01', y: 254.69}, // Wahid scandal
-                {x: '2020-09-01', y: 227.74}, // COVID-19 pandemic
-                {x: '2024-11-01', y: 186.57}  // Recent US election
-                // Add more key data points
+            // Use key data points from your research
+            window.epuData = [
+                {Month: '1994-10-01', EPU_Index: 42.23},
+                {Month: '1998-06-01', EPU_Index: 319.96},
+                {Month: '2001-05-01', EPU_Index: 254.69},
+                {Month: '2002-08-01', EPU_Index: 247.48},
+                {Month: '2008-05-01', EPU_Index: 128.56},
+                {Month: '2020-09-01', EPU_Index: 227.74},
+                {Month: '2022-08-01', EPU_Index: 220.29},
+                {Month: '2024-11-01', EPU_Index: 186.57},
+                {Month: '2024-12-01', EPU_Index: 167.47}
             ];
 
-            // Create simplified charts with sample data
-            // Implementation similar to above but with embedded data
+            window.majorEvents = [
+                {date: '1998-06-01', text: 'Asian Financial Crisis', value: 319.96},
+                {date: '2001-05-01', text: 'Wahid Scandal', value: 254.69},
+                {date: '2020-09-01', text: 'COVID-19 Pandemic', value: 227.74},
+                {date: '2022-08-01', text: 'Russia-Ukraine War', value: 220.29}
+            ];
+
+            window.articleData = [
+                {Date: '1994-10-04', Publisher: 'The Jakarta Post', Publisher_Code: 'JKPOST', Headline: 'TRADE MINISTERS OF APEC TO DISCUSS NEW GATT HERE.'},
+                {Date: '2000-01-31', Publisher: 'LKBN ANTARA', Publisher_Code: 'ANTARA', Headline: 'Economic policy uncertainty discussion'},
+                {Date: '1997-09-27', Publisher: 'Bisnis Indonesia', Publisher_Code: 'BISNIS', Headline: 'Financial market uncertainty'}
+            ];
+
+            window.statsData = {
+                total_articles: 6340,
+                epu_articles: 6236,
+                epu_percentage: 98.4,
+                months_covered: 362
+            };
+
+            createArticleChart();
+            createEPUChart();
+            updateStatistics();
         }
+
+        // Event listeners
+        document.getElementById('show-events').addEventListener('change', updateEPUChart);
+        document.getElementById('date-filter').addEventListener('change', updateEPUChart);
+        document.getElementById('publisher-filter').addEventListener('change', updateArticleChart);
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initializeApp);
+
+        // Handle window resize for responsive charts
+        window.addEventListener('resize', function() {
+            if (document.getElementById('article-chart').children.length > 0) {
+                Plotly.Plots.resize('article-chart');
+            }
+            if (document.getElementById('epu-chart').children.length > 0) {
+                Plotly.Plots.resize('epu-chart');
+            }
+        });
     </script>
 </body>
 </html>
