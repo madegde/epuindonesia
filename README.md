@@ -1,4 +1,4 @@
-# EPU Indonesia Research
+# EPU Indonesia
 
 Economic Policy Uncertainty Index for Indonesia (1994-2024)
 
