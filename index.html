@@ -130,6 +130,7 @@
         .control-group label {
             font-weight: 500;
             font-size: 0.95em;
+            min-width: 80px;
         }
 
         .control-group select,
@@ -138,6 +139,97 @@
             border: 1px solid #ddd;
             border-radius: 5px;
             font-size: 14px;
+        }
+
+        .year-slider-container {
+            flex: 1;
+            min-width: 300px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        .year-slider-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .year-range-display {
+            font-weight: 600;
+            color: #667eea;
+            font-size: 1.1em;
+        }
+
+        .dual-slider {
+            position: relative;
+            height: 40px;
+            margin: 10px 0;
+        }
+
+        .slider-track {
+            position: absolute;
+            width: 100%;
+            height: 6px;
+            background: #ddd;
+            border-radius: 3px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .slider-range {
+            position: absolute;
+            height: 6px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 3px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .slider-input {
+            position: absolute;
+            width: 100%;
+            pointer-events: none;
+            appearance: none;
+            height: 40px;
+            opacity: 0;
+            z-index: 3;
+            top: 0;
+        }
+
+        .slider-input::-webkit-slider-thumb {
+            pointer-events: all;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid #667eea;
+            background: white;
+            cursor: pointer;
+            appearance: none;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        .slider-input::-moz-range-thumb {
+            pointer-events: all;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid #667eea;
+            background: white;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        .year-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+            font-size: 0.85em;
+            color: #999;
         }
 
         .btn {
@@ -301,8 +393,8 @@
                     <div class="stat-label">Monthly Data Points</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-number" id="epu-stat">98%</div>
-                    <div class="stat-label">EPU Matching Rate</div>
+                    <div class="stat-number" id="epu-stat">5</div>
+                    <div class="stat-label">News Sources</div>
                 </div>
             </div>
 
@@ -337,7 +429,7 @@
 
         <!-- Article Coverage Chart -->
         <section class="section">
-            <h2>Figure 1: Article Coverage per Publisher Over Time</h2>
+            <h2>Article Coverage per Publisher Over Time</h2>
             
             <div class="control-panel">
                 <div class="control-group">
@@ -352,6 +444,29 @@
                         <option value="JGLOBE">Jakarta Globe</option>
                     </select>
                 </div>
+
+                <div class="year-slider-container">
+                    <div class="year-slider-header">
+                        <span>Year Range:</span>
+                        <span class="year-range-display" id="year-range-display-1">1994 - 2024</span>
+                    </div>
+                    <div class="dual-slider">
+                        <div class="slider-track"></div>
+                        <div class="slider-range" id="slider-range-1"></div>
+                        <input type="range" class="slider-input" id="year-start-1" min="1994" max="2024" value="1994">
+                        <input type="range" class="slider-input" id="year-end-1" min="1994" max="2024" value="2024">
+                    </div>
+                    <div class="year-labels">
+                        <span>1994</span>
+                        <span>2000</span>
+                        <span>2005</span>
+                        <span>2010</span>
+                        <span>2015</span>
+                        <span>2020</span>
+                        <span>2024</span>
+                    </div>
+                </div>
+
                 <button class="btn" onclick="updateArticleChart()">Update Chart</button>
                 <a href="#" class="btn" onclick="downloadData('articles')">Download Data</a>
             </div>
@@ -367,19 +482,32 @@
 
         <!-- EPU Index Chart -->
         <section class="section">
-            <h2>Figure 2: Economic Policy Uncertainty Index</h2>
+            <h2>Economic Policy Uncertainty Index</h2>
             
             <div class="control-panel">
-                <div class="control-group">
-                    <label>Date Range:</label>
-                    <select id="date-filter">
-                        <option value="all">Full Period (1994-2024)</option>
-                        <option value="1990s">1990s (1990-1999)</option>
-                        <option value="2000s">2000s (2000-2009)</option>
-                        <option value="2010s">2010s (2010-2019)</option>
-                        <option value="2020s">2020s (2020-2024)</option>
-                    </select>
+
+                <div class="year-slider-container">
+                    <div class="year-slider-header">
+                        <span>Year Range:</span>
+                        <span class="year-range-display" id="year-range-display-2">1994 - 2024</span>
+                    </div>
+                    <div class="dual-slider">
+                        <div class="slider-track"></div>
+                        <div class="slider-range" id="slider-range-2"></div>
+                        <input type="range" class="slider-input" id="year-start-2" min="1994" max="2024" value="1994">
+                        <input type="range" class="slider-input" id="year-end-2" min="1994" max="2024" value="2024">
+                    </div>
+                    <div class="year-labels">
+                        <span>1994</span>
+                        <span>2000</span>
+                        <span>2005</span>
+                        <span>2010</span>
+                        <span>2015</span>
+                        <span>2020</span>
+                        <span>2024</span>
+                    </div>
                 </div>
+
                 <div class="control-group">
                     <label>Show Events:</label>
                     <input type="checkbox" id="show-events" checked>
@@ -445,6 +573,62 @@
         let currentEPUData = null;
         let currentArticleData = null;
 
+        // Initialize Year Range Sliders
+        function initializeYearSliders() {
+            // Setup for both sliders
+            ['1', '2'].forEach(num => {
+                const startSlider = document.getElementById(`year-start-${num}`);
+                const endSlider = document.getElementById(`year-end-${num}`);
+                const rangeDisplay = document.getElementById(`year-range-display-${num}`);
+                const sliderRange = document.getElementById(`slider-range-${num}`);
+
+                function updateSliderRange() {
+                    const start = parseInt(startSlider.value);
+                    const end = parseInt(endSlider.value);
+                    
+                    // Prevent overlap
+                    if (start > end) {
+                        startSlider.value = end;
+                    }
+                    if (end < start) {
+                        endSlider.value = start;
+                    }
+                    
+                    // Update display
+                    rangeDisplay.textContent = `${startSlider.value} - ${endSlider.value}`;
+                    
+                    // Update visual range
+                    const totalRange = 2024 - 1994;
+                    const startPercent = ((startSlider.value - 1994) / totalRange) * 100;
+                    const endPercent = ((endSlider.value - 1994) / totalRange) * 100;
+                    
+                    sliderRange.style.left = `${startPercent}%`;
+                    sliderRange.style.width = `${endPercent - startPercent}%`;
+                }
+
+                startSlider.addEventListener('input', () => {
+                    updateSliderRange();
+                    if (num === '1') {
+                        updateArticleChart();
+                    } else {
+                        updateEPUChart();
+                    }
+                });
+
+                endSlider.addEventListener('input', () => {
+                    updateSliderRange();
+                    if (num === '1') {
+                        updateArticleChart();
+                    } else {
+                        updateEPUChart();
+                    }
+                });
+
+                // Initialize range
+                updateSliderRange();
+            });
+        }
+
         // Initialize application
         async function initializeApp() {
             try {
@@ -465,6 +649,9 @@
                     currentArticleData = articleData;
                 }
 
+                // Initialize sliders
+                initializeYearSliders();
+
                 // Create charts
                 createEPUChart();
                 createArticleChart();
@@ -473,10 +660,11 @@
             } catch (error) {
                 console.log('Loading embedded fallback data...');
                 loadFallbackData();
+                initializeYearSliders();
             }
         }
 
-        // Create EPU Index Chart
+        // Create EPU Index Chart with Year Filtering
         function createEPUChart() {
             document.getElementById('loading2').style.display = 'none';
             
@@ -485,26 +673,15 @@
                 return;
             }
 
-            // Filter data based on date range
-            const dateFilter = document.getElementById('date-filter').value;
-            let filteredData = currentEPUData;
+            // Get year range from slider
+            const startYear = parseInt(document.getElementById('year-start-2').value);
+            const endYear = parseInt(document.getElementById('year-end-2').value);
             
-            if (dateFilter !== 'all') {
-                const ranges = {
-                    '1990s': ['1990-01-01', '1999-12-31'],
-                    '2000s': ['2000-01-01', '2009-12-31'],
-                    '2010s': ['2010-01-01', '2019-12-31'],
-                    '2020s': ['2020-01-01', '2030-12-31']
-                };
-                
-                if (ranges[dateFilter]) {
-                    filteredData = currentEPUData.filter(d => {
-                        const date = new Date(d.Month);
-                        return date >= new Date(ranges[dateFilter][0]) && 
-                               date <= new Date(ranges[dateFilter][1]);
-                    });
-                }
-            }
+            // Filter data based on year range
+            let filteredData = currentEPUData.filter(d => {
+                const year = new Date(d.Month).getFullYear();
+                return year >= startYear && year <= endYear;
+            });
 
             const trace = {
                 x: filteredData.map(d => d.Month),
@@ -523,7 +700,7 @@
 
             const layout = {
                 title: {
-                    text: 'Economic Policy Uncertainty Index for Indonesia',
+                    text: `Economic Policy Uncertainty Index (${startYear}-${endYear})`,
                     font: {size: 20, family: 'Arial, sans-serif', color: '#2c3e50'}
                 },
                 xaxis: {
@@ -531,7 +708,8 @@
                     type: 'date',
                     showgrid: true,
                     gridcolor: '#E5E5E5',
-                    tickformat: '%Y'
+                    tickformat: '%Y',
+                    range: [`${startYear}-01-01`, `${endYear}-12-31`]
                 },
                 yaxis: {
                     title: 'EPU Index',
@@ -548,11 +726,9 @@
             // Add event annotations if enabled
             if (document.getElementById('show-events').checked && typeof majorEvents !== 'undefined') {
                 majorEvents.forEach(event => {
-                    const eventDate = new Date(event.date);
-                    const rangeStart = new Date(filteredData[0]?.Month);
-                    const rangeEnd = new Date(filteredData[filteredData.length - 1]?.Month);
+                    const eventYear = new Date(event.date).getFullYear();
                     
-                    if (eventDate >= rangeStart && eventDate <= rangeEnd) {
+                    if (eventYear >= startYear && eventYear <= endYear) {
                         layout.annotations.push({
                             x: event.date,
                             y: event.value,
@@ -580,7 +756,7 @@
                 displaylogo: false,
                 toImageButtonOptions: {
                     format: 'png',
-                    filename: 'epu_indonesia_index',
+                    filename: `epu_indonesia_${startYear}_${endYear}`,
                     height: 600,
                     width: 1200,
                     scale: 2
@@ -590,7 +766,7 @@
             Plotly.newPlot('epu-index-chart', [trace], layout, config);
         }
 
-        // Create Article Coverage Chart
+        // Create Article Coverage Chart with Year Filtering
         function createArticleChart() {
             document.getElementById('loading1').style.display = 'none';
             
@@ -599,13 +775,18 @@
                 return;
             }
 
-            // Filter data based on publisher selection
-            const publisherFilter = document.getElementById('publisher-filter').value;
-            let filteredData = currentArticleData;
+            // Get year range from slider
+            const startYear = parseInt(document.getElementById('year-start-1').value);
+            const endYear = parseInt(document.getElementById('year-end-1').value);
             
-            if (publisherFilter !== 'all') {
-                filteredData = currentArticleData.filter(d => d.Publisher_Code === publisherFilter);
-            }
+            // Filter data based on publisher and year range
+            const publisherFilter = document.getElementById('publisher-filter').value;
+            let filteredData = currentArticleData.filter(d => {
+                const year = new Date(d.Date).getFullYear();
+                const yearMatch = year >= startYear && year <= endYear;
+                const publisherMatch = publisherFilter === 'all' || d.Publisher_Code === publisherFilter;
+                return yearMatch && publisherMatch;
+            });
 
             // Group by publisher for separate traces
             const publisherGroups = {};
@@ -654,14 +835,15 @@
 
             const layout = {
                 title: {
-                    text: 'Article Coverage per Publisher Over Time',
+                    text: `Article Coverage per Publisher (${startYear}-${endYear})`,
                     font: {size: 20, family: 'Arial, sans-serif', color: '#2c3e50'}
                 },
                 xaxis: {
                     title: 'Year',
                     type: 'date',
                     showgrid: true,
-                    gridcolor: '#E5E5E5'
+                    gridcolor: '#E5E5E5',
+                    range: [`${startYear}-01-01`, `${endYear}-12-31`]
                 },
                 yaxis: {
                     title: 'Publisher',
@@ -698,7 +880,7 @@
             createArticleChart();
         }
 
-        // Update statistics from loaded data
+        // Update statistics
         function updateStatistics() {
             if (typeof statsData !== 'undefined') {
                 document.getElementById('articles-stat').textContent = statsData.total_articles.toLocaleString();
@@ -707,25 +889,40 @@
             }
         }
 
-        // Download functions
+        // Download functions (remains the same)
         function downloadData(type) {
+            const startYear1 = document.getElementById('year-start-1').value;
+            const endYear1 = document.getElementById('year-end-1').value;
+            const startYear2 = document.getElementById('year-start-2').value;
+            const endYear2 = document.getElementById('year-end-2').value;
+            
             let csvContent = "data:text/csv;charset=utf-8,";
             let filename = "";
             
             if (type === 'epu' && currentEPUData) {
+                const filteredData = currentEPUData.filter(d => {
+                    const year = new Date(d.Month).getFullYear();
+                    return year >= startYear2 && year <= endYear2;
+                });
+                
                 csvContent += "Date,EPU_Index\n";
-                currentEPUData.forEach(row => {
+                filteredData.forEach(row => {
                     csvContent += `${row.Month},${row.EPU_Index}\n`;
                 });
-                filename = "epu_indonesia_index.csv";
+                filename = `epu_indonesia_${startYear2}_${endYear2}.csv`;
                 
             } else if (type === 'articles' && currentArticleData) {
+                const filteredData = currentArticleData.filter(d => {
+                    const year = new Date(d.Date).getFullYear();
+                    return year >= startYear1 && year <= endYear1;
+                });
+                
                 csvContent += "Date,Publisher,Publisher_Code,Headline\n";
-                currentArticleData.forEach(row => {
-                    const headline = (row.Headline || '').replace(/"/g, '""'); // Escape quotes
+                filteredData.forEach(row => {
+                    const headline = (row.Headline || '').replace(/"/g, '""');
                     csvContent += `${row.Date},"${row.Publisher}",${row.Publisher_Code},"${headline}"\n`;
                 });
-                filename = "article_coverage_data.csv";
+                filename = `articles_${startYear1}_${endYear1}.csv`;
             } else {
                 alert('Data not available for download');
                 return;
@@ -772,7 +969,6 @@
         // Event listeners
         document.addEventListener('DOMContentLoaded', initializeApp);
         document.getElementById('show-events').addEventListener('change', updateEPUChart);
-        document.getElementById('date-filter').addEventListener('change', updateEPUChart);
         document.getElementById('publisher-filter').addEventListener('change', updateArticleChart);
 
         // Handle responsive resizing
