@@ -1,7 +1,7 @@
 const statsData = {
   "total_articles": 6340,
   "epu_articles": 6236,
-  "epu_percentage": 98.4,
+  "news_stat": 5,
   "date_range": {
     "start": "1994-10-04",
     "end": "2024-12-31"
