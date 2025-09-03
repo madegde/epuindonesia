@@ -411,19 +411,27 @@
             <div class="method-grid">
                 <div class="method-card">
                     <h4>Data Collection</h4>
-                    <p>Articles from Factiva database covering 5 major Indonesian newspapers over 30+ years</p>
+                    <p>Sourced 6,430 articles from the Factiva database covering five leading Indonesian newspapers (The Jakarta Post, LKBN ANTARA, Bisnis Indonesia, Tempo, and The Jakarta Globe) from October 1994 to December 2024. Factiva was selected for its comprehensive local Indonesian newspaper database and timely updates.</p>
                 </div>
                 <div class="method-card">
-                    <h4>Text Processing</h4>
-                    <p>Python-based RTF conversion and keyword matching for E+P+U terms</p>
+                    <h4>EPU Keyword Classification</h4>
+                    <p>Each article must contain at least one term from all three categories:<br>
+                    • <strong>Economic (E):</strong> economic, economy<br>
+                    • <strong>Policy (P):</strong> policy, public, tax, taxation, taxes, spending, expenditure, fiscal, stimulus, budget, deficit, national debt, tariff, subsidies, subsidy, Bank Indonesia, central bank, reserves, interest rates, legislation, legislative, house of representatives, regulation<br>
+                    • <strong>Uncertainty (U):</strong> uncertain, uncertainty, uncertainties</p>
                 </div>
                 <div class="method-card">
                     <h4>Index Construction</h4>
-                    <p>Baker, Bloom & Davis 5-step standardization and normalization process</p>
+                    <p>Following Baker et al. (2016) methodology with 5 steps:<br>
+                    1) Compute times-series variance σ²ᵢ for each paper<br>
+                    2) Standardize Xᵢₜ by dividing through by standard deviation σᵢ<br>
+                    3) Compute mean over newspapers Yᵢₜ for each month<br>
+                    4) Compute M, the mean value of Zₜ in interval T₂<br>
+                    5) Multiply Zₜ by (100/M) to obtain normalized EPU time-series index</p>
                 </div>
                 <div class="method-card">
-                    <h4>Visualization</h4>
-                    <p>Interactive Plotly.js charts with event annotations and data filtering</p>
+                    <h4>Event Analysis</h4>
+                    <p>Analyzed EPU index against major economic and political events including Asian Financial Crisis (1997-1998), political scandals (Bulogate/Bruneigate 2000-2001), constitutional amendments (2002), global financial crisis (2008), fuel subsidy cuts (2014), COVID-19 pandemic (2020), and Russia-Ukraine war (2022) to validate the index's responsiveness to significant events.</p>
                 </div>
             </div>
         </section>
