@@ -304,9 +304,9 @@
             100% { transform: rotate(360deg); }
         }
 
-        .method-grid {
+        .method-grid-2x2 {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(2,1fr));
             gap: 30px;
             margin: 40px 0;
         }
@@ -358,7 +358,11 @@
             .stats-grid {
                 grid-template-columns: 1fr;
             }
-
+            
+            .method-grid-2x2 {
+                grid-template-columns: 1fr;
+            }
+            
             .control-panel {
                 flex-direction: column;
                 gap: 15px;
